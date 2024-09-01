@@ -48,17 +48,21 @@ const StyledCard = styled(Card)(() => ({
   },
 }));
 
-const RatingDialog = ({ isOpen, onClose, onSubmit, profileName }: { 
-  isOpen: boolean; 
-  onClose: () => void; 
-  onSubmit: (rating: number) => void; 
-  profileName: any
-}) => {
-  const [rating, setRating] = useState<number | null>(0);
+interface RatingDialogProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (rating: number) => void;
+  profileName: any;
+}
+
+
+const RatingDialog: React.FC<RatingDialogProps> = ({ isOpen, onClose, onSubmit, profileName }) => {
+  const [rating, setRating] = useState<number>(0);
 
   const handleSubmit = () => {
-    if (rating !== null) {
+    if (rating !== 0) {
       onSubmit(rating);
+      onClose();  // Close the dialog after submission
     }
   };
 
@@ -70,11 +74,11 @@ const RatingDialog = ({ isOpen, onClose, onSubmit, profileName }: {
         <StyledRating
           name="rating"
           value={rating}
-          onChange={(event, newValue) => {
-            console.log(event)
-            setRating(newValue);
+          onChange={(_, newValue) => {
+            setRating(newValue ?? 0);
           }}
           size="large"
+          max={10}  // Set maximum rating to 10
           emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
         />
       </DialogContent>
@@ -84,7 +88,7 @@ const RatingDialog = ({ isOpen, onClose, onSubmit, profileName }: {
           onClick={handleSubmit} 
           variant="contained" 
           color="primary" 
-          disabled={rating === null}
+          disabled={rating === 0}
         >
           Submit Rating
         </Button>
@@ -92,6 +96,8 @@ const RatingDialog = ({ isOpen, onClose, onSubmit, profileName }: {
     </Dialog>
   );
 };
+
+
 
 function App() {
   const profiles: Profile[] = [
@@ -232,7 +238,7 @@ function App() {
   return (
     <Container>
       <Typography variant="h3" component="h1" gutterBottom>
-        Profile Rating App
+        Rate Your House
       </Typography>
       <Stack direction="row" spacing={2} useFlexGap flexWrap="wrap">
         {profiles.map(profile => (
