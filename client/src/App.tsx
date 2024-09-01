@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import axios from 'axios'
 import { Stack, Card, CardContent, CardMedia, Typography, Container, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } from '@mui/material'
 
@@ -15,21 +15,117 @@ type Rating = {
 };
 
 function App() {
-  const [profiles, setProfiles] = useState<Profile[]>([])
+  const profiles = [
+    {
+      "id": 1,
+      "name": "ajay",
+      "imageUrl": "/profiles/ajay.jpeg"
+    },
+    {
+      "id": 2,
+      "name": "bhavya",
+      "imageUrl": "/profiles/bhavya.jpeg"
+    },
+    {
+      "id": 3,
+      "name": "dev",
+      "imageUrl": "/profiles/dev.jpeg"
+    },
+    {
+      "id": 4,
+      "name": "dhanashree",
+      "imageUrl": "/profiles/dhanashree.jpeg"
+    },
+    {
+      "id": 5,
+      "name": "dharmik",
+      "imageUrl": "/profiles/dharmik.jpeg"
+    },
+    {
+      "id": 6,
+      "name": "fenil",
+      "imageUrl": "/profiles/fenil.jpeg"
+    },
+    {
+      "id": 7,
+      "name": "henil",
+      "imageUrl": "/profiles/henil.jpeg"
+    },
+    {
+      "id": 8,
+      "name": "jainil",
+      "imageUrl": "/profiles/jainil.jpeg"
+    },
+    {
+      "id": 9,
+      "name": "jinesh",
+      "imageUrl": "/profiles/jinesh.jpeg"
+    },
+    {
+      "id": 10,
+      "name": "karan",
+      "imageUrl": "/profiles/karan.jpeg"
+    },
+    {
+      "id": 11,
+      "name": "keyur",
+      "imageUrl": "/profiles/keyur.jpeg"
+    },
+    {
+      "id": 12,
+      "name": "krishna",
+      "imageUrl": "/profiles/krishna.jpeg"
+    },
+    {
+      "id": 13,
+      "name": "krupal",
+      "imageUrl": "/profiles/krupal.jpeg"
+    },
+    {
+      "id": 14,
+      "name": "mihir",
+      "imageUrl": "/profiles/mihir.jpeg"
+    },
+    {
+      "id": 15,
+      "name": "mohit",
+      "imageUrl": "/profiles/mohit.jpeg"
+    },
+    {
+      "id": 16,
+      "name": "namit",
+      "imageUrl": "/profiles/namit.jpeg"
+    },
+    {
+      "id": 17,
+      "name": "sahil",
+      "imageUrl": "/profiles/sahil.jpeg"
+    },
+    {
+      "id": 18,
+      "name": "vikas",
+      "imageUrl": "/profiles/vikas.jpeg"
+    },
+    {
+      "id": 19,
+      "name": "vruxak",
+      "imageUrl": "/profiles/vruxak.jpeg"
+    },
+    {
+      "id": 20,
+      "name": "yagnesh",
+      "imageUrl": "/profiles/yagnesh.jpeg"
+    },
+    {
+      "id": 21,
+      "name": "yash",
+      "imageUrl": "/profiles/yash.jpeg"
+    }
+  ]
+
   const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null)
   const [rating, setRating] = useState<number>(1)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-
-  useEffect(() => {
-    // Fetch profiles from the backend
-    axios.get('http://localhost:5000/profiles')
-      .then(response => setProfiles(response.data))
-      .catch(error => console.error('Error fetching profiles:', error))
-  }, [])
-
-  const handleProfileClick = (profile: Profile) => {
-    setSelectedProfile(profile)
-  }
 
   const handleDialogOpen = (profile: Profile) => {
     setSelectedProfile(profile)
@@ -65,7 +161,7 @@ function App() {
           <Card key={profile.id} onClick={() => handleDialogOpen(profile)} sx={{ width: 200 }}>
             <CardMedia
               component="img"
-              image={`data:image/jpeg;base64,${profile.imageUrl}`}
+              image={profile.imageUrl}
               alt={profile.name}
               sx={{ height: 200 }} // Square aspect ratio
             />
@@ -76,7 +172,7 @@ function App() {
         ))}
       </Stack>
       <Dialog open={isDialogOpen} onClose={handleDialogClose}>
-        <DialogTitle>Rate {selectedProfile?.name}</DialogTitle>
+        <DialogTitle>Rate {selectedProfile?.name} From 1 to 10 </DialogTitle>
         <DialogContent>
           <TextField
             type="number"
