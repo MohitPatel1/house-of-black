@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { 
   Stack, 
   Card, 
@@ -229,9 +231,26 @@ function App() {
       } as RatingSubmission)
         .then(() => {
           handleDialogClose();
-          // You might want to add a success message or update UI here
+          toast.success('Rating submitted successfully!', {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+          });
         })
-        .catch(error => console.error('Error submitting rating:', error));
+        .catch(error => {
+          console.error('Error submitting rating:', error);
+          toast.error('Failed to submit rating. Please try again.', {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+          });
+        });
     }
   };
 
