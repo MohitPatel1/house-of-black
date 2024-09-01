@@ -1,6 +1,21 @@
-import { useState } from 'react'
-import axios from 'axios'
-import { Stack, Card, CardContent, CardMedia, Typography, Container, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } from '@mui/material'
+import { useState } from 'react';
+import axios from 'axios';
+import { 
+  Stack, 
+  Card, 
+  CardContent, 
+  CardMedia, 
+  Typography, 
+  Container, 
+  Dialog, 
+  DialogTitle, 
+  DialogContent, 
+  DialogActions, 
+  Button, 
+  Rating
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
+import StarIcon from '@mui/icons-material/Star';
 
 // Define types for Profile and Rating
 type Profile = {
@@ -9,13 +24,77 @@ type Profile = {
   imageUrl: string;
 };
 
-type Rating = {
+type RatingSubmission = {
   profileId: number;
   rating: number;
 };
 
+// Styled components
+const StyledRating = styled(Rating)({
+  '& .MuiRating-iconFilled': {
+    color: '#ffb400',
+  },
+  '& .MuiRating-iconHover': {
+    color: '#ffa000',
+  },
+});
+
+const StyledCard = styled(Card)(() => ({
+  width: 200,
+  transition: 'transform 0.2s',
+  '&:hover': {
+    transform: 'scale(1.05)',
+    cursor: 'pointer',
+  },
+}));
+
+const RatingDialog = ({ isOpen, onClose, onSubmit, profileName }: { 
+  isOpen: boolean; 
+  onClose: () => void; 
+  onSubmit: (rating: number) => void; 
+  profileName: any
+}) => {
+  const [rating, setRating] = useState<number | null>(0);
+
+  const handleSubmit = () => {
+    if (rating !== null) {
+      onSubmit(rating);
+    }
+  };
+
+  return (
+    <Dialog open={isOpen} onClose={onClose}>
+      <DialogTitle>How amazing is {profileName}?</DialogTitle>
+      <DialogContent>
+        <Typography component="legend">Select your rating</Typography>
+        <StyledRating
+          name="rating"
+          value={rating}
+          onChange={(event, newValue) => {
+            console.log(event)
+            setRating(newValue);
+          }}
+          size="large"
+          emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
+        />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose}>Cancel</Button>
+        <Button 
+          onClick={handleSubmit} 
+          variant="contained" 
+          color="primary" 
+          disabled={rating === null}
+        >
+          Submit Rating
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
 function App() {
-  const profiles = [
+  const profiles: Profile[] = [
     {
       "id": 1,
       "name": "ajay",
@@ -121,35 +200,34 @@ function App() {
       "name": "yash",
       "imageUrl": "/profiles/yash.jpeg"
     }
-  ]
+  ];
 
-  const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null)
-  const [rating, setRating] = useState<number>(1)
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleDialogOpen = (profile: Profile) => {
-    setSelectedProfile(profile)
-    setIsDialogOpen(true)
-  }
+    setSelectedProfile(profile);
+    setIsDialogOpen(true);
+  };
 
   const handleDialogClose = () => {
-    setIsDialogOpen(false)
-    setSelectedProfile(null)
-    setRating(1)
-  }
+    setIsDialogOpen(false);
+    setSelectedProfile(null);
+  };
 
-  const handleRatingSubmit = () => {
+  const handleRatingSubmit = (rating: number) => {
     if (selectedProfile) {
       axios.post('http://localhost:5000/rate', {
         profileId: selectedProfile.id,
         rating: rating
-      } as Rating)
+      } as RatingSubmission)
         .then(() => {
-          handleDialogClose()
+          handleDialogClose();
+          // You might want to add a success message or update UI here
         })
-        .catch(error => console.error('Error submitting rating:', error))
+        .catch(error => console.error('Error submitting rating:', error));
     }
-  }
+  };
 
   return (
     <Container>
@@ -158,7 +236,7 @@ function App() {
       </Typography>
       <Stack direction="row" spacing={2} useFlexGap flexWrap="wrap">
         {profiles.map(profile => (
-          <Card key={profile.id} onClick={() => handleDialogOpen(profile)} sx={{ width: 200 }}>
+          <StyledCard key={profile.id} onClick={() => handleDialogOpen(profile)}>
             <CardMedia
               component="img"
               image={profile.imageUrl}
@@ -168,31 +246,17 @@ function App() {
             <CardContent>
               <Typography variant="body1">{profile.name}</Typography>
             </CardContent>
-          </Card>
+          </StyledCard>
         ))}
       </Stack>
-      <Dialog open={isDialogOpen} onClose={handleDialogClose}>
-        <DialogTitle>Rate {selectedProfile?.name} From 1 to 10 </DialogTitle>
-        <DialogContent>
-          <TextField
-            type="number"
-            label="Rating"
-            inputProps={{ min: 1, max: 10 }}
-            value={rating}
-            onChange={(e) => setRating(parseInt(e.target.value))}
-            fullWidth
-            margin="normal"
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleDialogClose}>Cancel</Button>
-          <Button onClick={handleRatingSubmit} variant="contained" color="primary">
-            Submit Rating
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <RatingDialog 
+        isOpen={isDialogOpen}
+        onClose={handleDialogClose}
+        onSubmit={handleRatingSubmit}
+        profileName={selectedProfile?.name}
+      />
     </Container>
-  )
+  );
 }
 
-export default App
+export default App;

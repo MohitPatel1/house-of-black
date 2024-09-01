@@ -6,6 +6,9 @@
   ],
   "compilerOptions": {
     "lib": ["dom", "dom.iterable", "esnext"],
-    // ... other options
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
   }
 }
